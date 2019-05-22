@@ -61,6 +61,7 @@
     </dependencies>
 
     <build>
+        <finalName>bitcoin_rate_fetcher</finalName>
         <plugins>
 
             <plugin>
