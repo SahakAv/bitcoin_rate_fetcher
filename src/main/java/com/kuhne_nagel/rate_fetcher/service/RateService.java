@@ -24,5 +24,5 @@ public interface RateService {
      * @param endDate - Started until which date historical date will be fetched
      *@return  RateHistoricalDataModel
      */
-    RateHistoricalDataModel getRateHistoricalDateByCurrency(final Currency currency, final LocalDate startDate, final LocalDate endDate);
+    RateHistoricalDataModel getRateHistoricalDataByCurrency(final Currency currency, final LocalDate startDate, final LocalDate endDate);
 }

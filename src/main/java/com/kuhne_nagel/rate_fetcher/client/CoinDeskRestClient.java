@@ -1,5 +1,6 @@
 package com.kuhne_nagel.rate_fetcher.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuhne_nagel.rate_fetcher.exception.CoinDeskCommunicationException;
 import com.kuhne_nagel.rate_fetcher.model.RateByCurrencyResponse;
 import com.kuhne_nagel.rate_fetcher.util.ApplicationPropertiesUtil;
@@ -17,6 +18,8 @@ import java.util.*;
 public class CoinDeskRestClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoinDeskRestClient.class);
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Client client;
 
@@ -41,17 +44,16 @@ public class CoinDeskRestClient {
 
     public RateByCurrencyResponse getRateByCurrency(final Currency currency) {
         LOGGER.debug("Getting current rate for a currency = {} ", currency.getCurrencyCode());
-        final WebTarget webTarget = client.target(coinDeskBaseUrl);
-        RateByCurrencyResponse response = null;
-        try {
-            response = webTarget
-                    .path(String.format(currentPriceUrl, currency.getCurrencyCode())).request(MediaType.APPLICATION_JSON).get(RateByCurrencyResponse.class);
 
+        final WebTarget webTarget = client.target(coinDeskBaseUrl);
+        try {
+            final String response = webTarget
+                    .path(String.format(currentPriceUrl, currency.getCurrencyCode())).request(MediaType.APPLICATION_JSON).get(String.class);
+            return objectMapper.readValue(response, RateByCurrencyResponse.class);
         } catch (Exception e) {
             LOGGER.error("Error occurred while fetching current rate for currency = {}", currency.getCurrencyCode());
             throw new CoinDeskCommunicationException(String.format("Error occurred while fetching current rate for currency %s", currency.getCurrencyCode()), e);
         }
-        return response;
     }
 
     public RateByCurrencyResponse getRateByCurrencyHistoryData(Currency currency, LocalDate startDate, LocalDate endDate) {
@@ -61,14 +63,13 @@ public class CoinDeskRestClient {
                 .queryParam("currency", currency.getCurrencyCode())
                 .queryParam("start", startDate)
                 .queryParam("end", endDate);
-        RateByCurrencyResponse rateByCurrencyResponse = null;
         try {
-            rateByCurrencyResponse = webTarget.request(MediaType.APPLICATION_JSON).get(RateByCurrencyResponse.class);
+            final String response = webTarget.request(MediaType.APPLICATION_JSON).get(String.class);
+            return objectMapper.readValue(response, RateByCurrencyResponse.class);
         } catch (Exception e) {
             LOGGER.error("Error occurred while fetching historical rate data for currency = {}", currency.getCurrencyCode());
             throw new CoinDeskCommunicationException(String.format("Error occurred while fetching historical rate data for currency %s", currency.getCurrencyCode()), e);
         }
-        return rateByCurrencyResponse;
     }
 
 
@@ -77,7 +78,7 @@ public class CoinDeskRestClient {
         readTimeout = Integer.valueOf(ApplicationPropertiesUtil.getProperty("client.read.timeout"));
         coinDeskBaseUrl = ApplicationPropertiesUtil.getProperty("coin.desk.base.url");
         currentPriceUrl = ApplicationPropertiesUtil.getProperty("coin.desk.currentPrice.url");
-        historicalUrl= ApplicationPropertiesUtil.getProperty("coin.desk.historicalData.url");
+        historicalUrl = ApplicationPropertiesUtil.getProperty("coin.desk.historicalData.url");
     }
 
 }

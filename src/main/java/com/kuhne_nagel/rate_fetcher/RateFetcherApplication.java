@@ -18,10 +18,13 @@ public class RateFetcherApplication {
 
     private final RateService rateService;
 
+    private final CurrencyUtil currencyUtil;
+
     private final Logger LOGGER = LoggerFactory.getLogger(RateFetcherApplication.class);
 
     public RateFetcherApplication() {
         rateService = new RateServiceImpl();
+        currencyUtil = new CurrencyUtil();
     }
 
     public void start() {
@@ -29,7 +32,7 @@ public class RateFetcherApplication {
         LOGGER.info("Please input currency for which rate will be fetched");
         final String currency = scanner.next();
         try {
-            Currency currencyByCode = CurrencyUtil.getCurrencyByCode(currency);
+            final Currency currencyByCode = currencyUtil.getCurrencyByCode(currency);
             fetchRateForCurrency(currencyByCode);
         } catch (InvalidCurrencyCodeException e) {
             LOGGER.error("Invalid currency provided please input correct one ");
@@ -39,7 +42,7 @@ public class RateFetcherApplication {
     private void fetchRateForCurrency(final Currency currency) {
         CompletableFuture.supplyAsync(() -> rateService.getRateByCurrency(currency))
                 .whenComplete((rate, throwable) -> LOGGER.info("Current rate for currency = '{}'is = '{}' ", rate.getCurrency(), rate.getRate()));
-        RateHistoricalDataModel rateHistory = rateService.getRateHistoricalDateByCurrency(currency, LocalDate.now().minusMonths(1), LocalDate.now());
+        RateHistoricalDataModel rateHistory = rateService.getRateHistoricalDataByCurrency(currency, LocalDate.now().minusMonths(1), LocalDate.now());
         LOGGER.info("Lowest rate for currency = '{}' is  ='{}' and highest rate is = '{}'", currency, rateHistory.getLowestRate(), rateHistory.getHighestRate());
     }
 

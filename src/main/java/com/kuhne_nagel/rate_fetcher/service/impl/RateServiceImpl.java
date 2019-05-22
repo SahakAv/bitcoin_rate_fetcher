@@ -32,7 +32,7 @@ public class RateServiceImpl implements RateService {
     }
 
     @Override
-    public RateHistoricalDataModel getRateHistoricalDateByCurrency(final Currency currency, final LocalDate startDate, final LocalDate endDate) {
+    public RateHistoricalDataModel getRateHistoricalDataByCurrency(final Currency currency, final LocalDate startDate, final LocalDate endDate) {
         final RateByCurrencyResponse rateByCurrencyHistoryData = coinDeskRestClient.getRateByCurrencyHistoryData(currency, startDate, endDate);
         final RateHistoricalDataModel rateHistoricalDataModel = mapper.mapRateHistoricalDataResponse(rateByCurrencyHistoryData);
         LOGGER.debug("Got rate history data = {} for currency = {}", rateHistoricalDataModel, currency.getCurrencyCode());

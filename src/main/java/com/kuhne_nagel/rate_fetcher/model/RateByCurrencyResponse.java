@@ -8,6 +8,10 @@ public class RateByCurrencyResponse {
 
     private JsonNode bpi;
 
+
+    public RateByCurrencyResponse() {
+    }
+
     public JsonNode getBpi() {
         return bpi;
     }

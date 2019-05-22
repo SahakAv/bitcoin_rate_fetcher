@@ -12,7 +12,7 @@ public class CurrencyUtil {
      * @return java.util.CurrencyCode
      *@throws InvalidCurrencyCodeException if the currency is invalid
      */
-    public static Currency getCurrencyByCode(final String currency) {
+    public  Currency getCurrencyByCode(final String currency) {
         try {
             return Currency.getInstance(currency);
         } catch (IllegalArgumentException e) {
